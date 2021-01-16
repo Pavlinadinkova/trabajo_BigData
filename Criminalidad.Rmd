@@ -1,0 +1,739 @@
+---
+title: <FONT COLOR="#DA16CA"> Criminalidad en el mundo </FONT> 
+author: "Pavlina Dinkova Grozeva" 
+date: "16 de Enero de 2021"
+output:
+  html_document:
+    theme: yeti
+    highlight: textmate 
+    toc: true
+    toc_depth: 3 
+    toc_float: 
+      collapsed: true
+      smooth_scroll: true
+    self_contained: true
+    number_sections: false
+    df_print: kable
+    code_download: true
+editor_options: 
+  chunk_output_type: console
+---
+
+<FONT COLOR="Brown">Proyecto realizado para la asignatura''Programación y manejo de datos en la era del Big Data" impartida por el profesor Pedro J. Pérez en el Grado de Economía de la Universidad de Valencia. La página web de la asignatura se puede ver [aquí]( https://perezp44.github.io/intro-ds-20-21-web) . Los trabajos elaborados por nuestros compañeros de curso pueden verse [aquí](https://perezp44.github.io/intro-ds-20-21-web/07-trabajos.html)</FONT>
+
+```{r packages-setup, include = FALSE}
+library(tidyverse)
+library(klippy)  #- remotes::install_github("rlesur/klippy")
+library(knitr)
+library(cowplot)
+library(xml2)
+library(magick)
+library(maps)
+library(gganimate)
+
+
+```
+
+```{r chunk-setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE, 
+                      #results = "hold",
+                      cache = FALSE, cache.path = "/caches/", comment = "#>",
+                      #fig.width = 7, #fig.height= 7,   
+                      #out.width = 7, out.height = 7,
+                      collapse = TRUE,  fig.show = "hold",
+                      fig.asp = 7/9, out.width = "60%", fig.align = "center")
+#- para mejorar los gráficos, bueno en realidad para que se vean igual en distintos SO
+#- https://www.jumpingrivers.com/blog/r-knitr-markdown-png-pdf-graphics/
+knitr::opts_chunk$set(dev = "png", dev.args = list(type = "cairo-png"))
+```
+
+```{r options-setup, include = FALSE}
+options(scipen = 999) #- para quitar la notación científica
+options("yaml.eval.expr" = TRUE) #- https://github.com/viking/r-yaml/issues/47  (lo puse x el pb con el warning) En realidad creo que mejor sería ponerlo en RProfile
+```
+
+
+```{r klippy, echo = FALSE}
+klippy::klippy(position = c("top", "right")) #- remotes::install_github("rlesur/klippy")
+
+library(packcircles)
+
+```
+
+-----------------
+
+## <FONT COLOR="#DA16CA"> 1.Introducción </FONT> 
+
+La palabra **crimen** se refiere a una acción voluntaria de herir gravemente o asesinar a alguien. 
+Como es de suponerse, hay diversos tipos y diversos niveles de gravedad de crímenes : mientras que algunos son robos o hurtos , otros pueden ser realmente flagrantes ataques contra la integridad humana como el abuso sexual , la tortura y el asesinato. 
+
+
+<center><img src="https://st3.depositphotos.com/6809168/19302/v/950/depositphotos_193022364-stock-illustration-crime-scene-danger-tapes-vector.jpg" width="350px" /></center>
+
+## <FONT COLOR="#DA16CA"> 2.Crimen mundial </FONT>
+
+Según los datos de la **Oficina de las Naciones Unidas contra la Droga y el Delito** (UNODC , por sus siglas en inglés) , cuya página oficial se puede ver [aquí]( https://dataunodc.un.org/) , señalan que en el mundo se producen más muertes por homicidios intencional que por conflictos armados y terrorismo juntos – 464.000 víctimas de homicidio, 89.000 de conflictos armados y 26.000 de actos terroristas en 2017.-
+Los altos niveles de conflicto armado e inseguridad tienen un impacto destructivo en el desarrollo de un país y afectan al crecimiento económico. En la **Agenda 2030** de la ONU , se encuentra un claro entendimiento de que los derechos humanos, la paz y la seguridad y el desarrollo están profundamente interrelacionadas y se refuerzan mutuamente. En su totalidad, se refleja la importancia de mejorar el acceso a la justicia,garantizar la seguridad y la protección y promover los derechos humano para el desarrollo sostenible.Todos los objetivos planteados por la ONU se pueden ver [aquí]( https://sdgs.un.org/goals)
+Para abordar estos desafíos y construir sociedades más pacíficas e inclusivas, es necesario que se establezcan regulaciones más eficientes y transparentes y presupuestos gubernamentales completos y realistas. Uno de los primeros pasos hacia la protección de los derechos individuales es la creación de instituciones nacionales de derechos humanos más independientes en todo el mundo. 
+No obstante, la tendencia muestra que el Objetivo de Desarrollo Sostenible fijado por la ONU para 2030 que pretende reducir significativamente todas las formas de violencia está lejos de ser cumplido.
+El riesgo de sufrir un asesinato ha caído en las últimas décadas ―en 2017 se produjeron 6,1 homicidios por cada 100.000 habitantes en el mundo, mientras que en 1993 fueron 7,4―, pero en realidad ese descenso está asociado al crecimiento demográfico y no a un cese de la violencia. Esto es, la población mundial ha aumentado un ritmo mayor que el de asesinatos. Además, en los últimos años se ha producido un repunte que choca frontalmente con el objetivo de las Naciones Unidas, ya que entre 2015 y 2017 los homicidios han aumentado un 4% a nivel mundial.
+
+Sin embargo, no todas las regiones se enmarcan dentro de la misma tendencia.
+
+
+
+
+
+### <FONT COLOR="#DA16CA"> 2.1.Casos de crimenes por continente </FONT>
+
+
+```{r out.width="100%" , echo=TRUE}
+#Paquetes utilizados
+library(ggplot2)
+library(plotrix)
+# Creamos los datos
+
+x <-  c(17.2,13,2.3,3,2.8)
+lbl <-  c("America","Africa","Asia","Europa", "Oceania")
+
+
+piepercent<- round(100*x/sum(x), 1)
+
+
+pie3D(x, labels = piepercent, main = "Casos de homicidios por continente en %",explode=0.1, edges = 10,border = "black", col = rainbow(length(x)))
+legend("top", c("America","Africa","Asia","Europa","Oceania"), cex = 0.5,
+   fill = rainbow(length(x)))
+
+
+```
+Europa ha disminuido su tasa de homicidios en un 63% desde 2002 y Asia un 36% desde 1990. Pero las Américas siguen reportando altos índices de criminalidad, al igual que África.
+Como podemos ver en el gráfico, con datos proporcionados de **UNODC** , el caso de América es especialmente preocupante ya que, a pesar de contar con el 13% del total de la población mundial, reporta el 44.9% de homicidios internacionales. Después de América, se sitúa África con casi 34%. Las regiones donde menos homicidios se producen es en Asia, seguida de Oceanía y Europa. 
+
+
+
+
+
+### <FONT COLOR="#DA16CA"> 2.2. Países más peligrosos </FONT>
+
+
+```{r out.width="100%" , echo=TRUE}
+#Paquetes
+
+library(tidyverse)
+library(ggplot2)
+library(magick)
+library(cowplot)
+
+#Seleccionar países
+
+world <- map_data("world") %>% mutate(color = case_when(region == "Venezuela" ~ 1,
+                                                        region == "South Africa" ~ 2,
+                                                        region == "El Salvador" ~ 3,
+                                                        region == "Afghanistan" ~ 4,
+                                                        region == "Brazil" ~ 5,
+                                                        region == "Guyana" ~ 6,
+                                                        region == "Jamaica" ~ 7,
+                                                        region == "Honduras" ~ 8,
+                                                        region == "Mexico" ~ 9)) %>% mutate(color = if_else(is.na(color),0,color))
+
+# Capitales de los paises
+
+ciudades <- c("Caracas","Ciudad del Cabo","San Salvador","Kabul","Brasilia","Georgetown","Kingston","Tegucigalpa","Mexico City")
+lat <- c(6.1975098,-33.09600,14.03208,31.66738,-14.030664,4.236475,18.50068,15.78618,20.84380)
+long <- c(-68.14307,27.76211,-88.70761,68.97343,-38.94233,-58.01074,-77.92686,-88.01040,-105.45634)
+
+coordciudades <- data.frame(ciudades,lat,long)
+
+
+#Mostralas en el mapa
+
+lineas <- data.frame(id = c("Caracas","Ciudad del Cabo","San Salvador","Kabul","Brasilia","Georgetown","Kingston","Tegucigalpa","Mexico City"),
+                     lat_1 = c(6.1975098,-33.09600,14.03208,31.66738,-14.030664,4.236475,18.50068,15.78618,20.84380),
+                     long_1 = c(-68.14307,27.76211,-88.70761,68.97343,-38.94233,-58.01074,-77.92686,-88.01040,-105.45634),
+                     lat_2 = c(14,-33,20,40,-20,10,30,-5,24),
+                     long_2 = c(-63,40,-81, 80,-30,-40,-60,-99,-130 ))
+#A continuación importamos las fotos con ''image_read'' y el link directo de la foto. Este procedimiento se realiza para cada uno de los países.
+```
+
+```{r, echo=FALSE}
+
+#Importar fotos
+
+venezuela <- image_read("https://upload.wikimedia.org/wikipedia/commons/0/06/Flag_of_Venezuela.svg")
+
+sudafrica<- image_read("https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg") %>% image_border("#ffffff","10x10")
+
+salvador <- image_read("https://upload.wikimedia.org/wikipedia/commons/3/34/Flag_of_El_Salvador.svg") %>% image_border("#ffffff","10x10")
+
+afganistan <- image_read("https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Afghanistan.svg") %>% image_border("#ffffff","10x10")
+
+brasil <- image_read("https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg") %>% image_border("#ffffff","10x10")
+
+guyana <- image_read("https://upload.wikimedia.org/wikipedia/commons/9/99/Flag_of_Guyana.svg") %>% image_border("#ffffff","10x10")
+
+jamaica <- image_read("https://upload.wikimedia.org/wikipedia/commons/0/0a/Flag_of_Jamaica.svg") %>% image_border("#ffffff","10x10")
+
+honduras <- image_read("https://upload.wikimedia.org/wikipedia/commons/8/82/Flag_of_Honduras.svg") %>% image_border("#ffffff","10x10")
+
+mexico <- image_read("https://upload.wikimedia.org/wikipedia/commons/f/fc/Flag_of_Mexico.svg") %>% image_border("#ffffff","10x10")
+```
+
+```{r}
+
+#Juntamos el mapa creado con las imágenes importadas
+mapasi <- ggplot() + geom_map(data = world, map = world, aes(long, lat, map_id = region), color = "#010101", fill = "#FAF168") +
+                    geom_map(data = world %>% filter(color==1), map = world, aes(long, lat, map_id = region), color = "#000000", fill = "red") +
+                    geom_map(data = world %>% filter(color==2), map = world, aes(long, lat, map_id = region), color = "#000000", fill = "yellow") +
+                    geom_map(data = world %>% filter(color==3), map = world, aes(long, lat, map_id = region), color = "#000000", fill = "#9d05ff") +
+                    geom_map(data = world %>% filter(color==4), map = world, aes(long, lat, map_id = region), color = "#000000", fill = "#ab6800") +
+                    geom_map(data = world %>% filter(color==5), map = world, aes(long, lat, map_id = region), color = "#000000", fill = "#241414") +
+                    geom_map(data = world %>% filter(color==6), map = world, aes(long, lat, map_id = region), color = "#000000", fill = "#004dff") +
+                    geom_map(data = world %>% filter(color==7), map = world, aes(long, lat, map_id = region), color = "#000000", fill = "#F781CE") +
+                    geom_map(data = world %>% filter(color==8), map = world, aes(long, lat, map_id = region), color = "#000000", fill = "#a4034b") +
+                    geom_map(data = world %>% filter(color==9), map = world, aes(long, lat, map_id = region), color = "#000000", fill = "#238a00") +
+                    geom_segment(data = lineas, aes(x = long_1, y = lat_1, xend = long_2, yend = lat_2), color = "#000000", size = 2, alpha = 0.8, lineend = "round") +
+                    geom_point(data = coordciudades, aes(x = long,y = lat), size = 2) +
+                    ylim(-55,NA) +
+                    theme(panel.background = element_rect(fill = "#FCDFDF"), panel.grid = element_line(colour = "#000000"), axis.title = element_blank(),
+                    axis.text = element_blank(), axis.ticks = element_blank())
+```
+En base a los datos del Ministerio de Asuntos Exteriores y del** Índice de paz global** publicado por el **Institute of Economics and Peace** en 2018,podemos observar en el mapa los países más peligrosos. Este índice es útil sobre todo para mirar la evolución del nivel de paz en un país a lo largo del tiempo. El IPG utiliza 23 indicadores cualitativos y cuantitativos de fuentes muy respetadas y mide el estado de la paz en tres ámbitos temáticos: el grado de seguridad y protección social, el grado de conflictos internos e internacionales activos y el grado de militarización.
+Como podemos observar, la mayoría de los países considerados más ‘’violentos’’ se encuentran en América Central y Latina. Estos países son : Venezuela , El Salvador, Brasil , Guyana , Jamaica, Honduras y México.
+Los otros países ‘’peligrosos’’ son Sudáfrica ( África) y Afganistán (Asia).
+
+
+
+
+
+```{r out.width="100%", echo=FALSE}
+mapafinal <- ggdraw(mapasi) +  draw_image(venezuela, x = 0.34, y = 0.52, width = 0.05, height = 0.05) +
+                            draw_image(sudafrica, x = 0.59, y = 0.19, width = 0.05, height = 0.05) +
+                            draw_image(salvador, x=0.24, y=0.33, width = 0.05, height = 0.05) +                                                   draw_image(afganistan, x = 0.68, y = 0.67, width = 0.05, height = 0.05) +
+                            draw_image(brasil, x = 0.41, y = 0.26, width = 0.05, height = 0.05) +
+                            draw_image(guyana, x = 0.40, y = 0.47, width = 0.05, height = 0.05) +
+                            draw_image(jamaica, x = 0.35, y = 0.60, width = 0.05, height = 0.05) +
+                            draw_image(honduras, x = 0.26, y = 0.55, width = 0.05, height = 0.05) + 
+                            draw_image(mexico, x = 0.12, y = 0.56, width = 0.05, height = 0.05)
+                            
+mapafinal
+
+```
+
+
+### <FONT COLOR="#DA16CA"> 2.3. Países más seguros </FONT>
+
+
+
+```{r out.width="100%"}
+#Importamos datos y los arreglamos
+url87 <- "https://raw.githubusercontent.com/Pavlinadinkova/Criminalidad/main/paises.csv"
+seguros <- rio::import(url87 , setclass = "tibble")
+
+names(seguros)= c("Ranking","Pais","Criminalidad","Seguridad")
+seguros <- seguros %>% mutate( Seguridad = stringr::str_remove_all(Seguridad, pattern = "([.])"))
+seguros <- seguros %>% mutate( Seguridad = stringr::str_replace_all(Seguridad , pattern = "[,]" , replacement = "." ))
+seguros <- seguros %>% mutate( Seguridad = as.numeric(Seguridad))
+
+seguros <- seguros %>% select(Pais, Seguridad)
+#Creamos círculos
+
+pck <-circleProgressiveLayout(seguros$Seguridad, sizetype = 'area')
+
+mydata<- cbind(seguros, pck)
+
+myPlotCord <- circleLayoutVertices(pck)
+
+pl <- ggplot()
+
+pl <- pl + geom_polygon(data = myPlotCord, aes(x, y, group = id, fill=as.factor(id)), colour = "black", alpha = 0.6)
+pl <- pl+ geom_text(data = mydata, aes(x, y, size=Seguridad, label = Pais)) + scale_size_continuous(range = c(1,4)) + theme_void() +  theme(legend.position="none") + coord_equal()
+
+
+plotly::ggplotly(pl)
+
+
+```
+Si bien algunas regiones han caído en ciclos aparentemente interminables de violencia y conflicto, otras disfrutan de un nivel sostenido de paz, seguridad y prosperidad.
+
+
+A continuación podemos observar la clasificación de los países según el **Índice de Seguridad**. Dicho índice ordena los países del mundo según un escalafón del 0 al 100. Se toman en consideración factores como el nivel de delincuencia, seguridad a la hora de caminar solo/a por la calle de día y de noche, atracos, robos de automóviles y en los hogares, crímenes violentos y más.
+En las primeras posiciones en lo que respecta a seguridad corresponden a naciones de Asia. Estas son Qatar con 88.10 puntos, Taiwán (84.7) , Emiratos Árabes Unidos (84.5) , Georgia(79.5), Omán(79.3), y Hong Kong (79).
+En cuanto al continente europeo, todos los países se ubican sobre la media global en cuanto a seguridad. Entre los mejores están Eslovenia con 79 puntos, siendo el país más seguro del mundo fuera de Asia. Le sigue Suiza con 78.4 puntos.
+España se sitúa en el puesto 37º con 67.6 puntos.
+En lo que respecta a América, pocos países han logrado estar sobre la media global en cuanto a seguridad. Únicamente Cuba (70.9) , Canadá (59.3) y Nicaragua(54.5).
+
+
+
+## <FONT COLOR="#DA16CA"> 3.Poblaciones con más presos </FONT> {.tabset}
+
+### **Países** 
+
+Alrededor del mundo existen unas 11  millones de personas encarceladas, ya sea que estén esperando un juicio, detenidos, sentenciados o convictos.
+
+En los sistemas judiciales a nivel mundial, los ciudadanos que sean encontrados culpables de diversos delitos pueden cumplir la pena correspondiente a la falta, establecida en los códigos penales, con el internamiento del reo en un establecimiento penitenciario.
+
+Como puede ser previsible, a mayor número de población que tiene un país, mayores probabilidades existen de que, cuantitativamente, haya cientos de miles de sus habitantes encarcelados.
+Sin embargo, que exista correlación entre población total y población encarcelada no quiere decir que haya excepciones o ejemplos que evidencien situaciones concretas, por no decir anormales.
+
+Este es el caso de Estados Unidos, que a pesar de ser el tercer país más poblado del mundo con cerca de 330 millones de habitantes-pero muy lejos de India y China-, es el país que mayor población carcelaria tiene. Según **World Prison Brief** , en 2018 tuvo  2.121.600    personas en prisión. El motivo principal de este sobredimensionamiento es la dura política judicial en el país, con penas muy elevadas y poco orientada a la reinserción frente a una perspectiva punitiva muy asentada.
+
+Después de EEUU, se sitúa China , que a pesar de ser el primer país mundial en cuanto a número de habitantes, se sitúa bastante por detrás de EEUU. En 2018, China tuvo 1.649.804 personas en la carcel. No obstante, el **World Prison Brief** advierte que estos datos sólo incluyen a los que ya fueron sentenciados y se dejan fuera otras personas que están en procesos judiciales. 
+
+
+Otro dato que llama la atención es India, que es el segundo país más poblado , sin embargo, es el quinto en cuanto a personas encarceladas, con 419.623 en 2018.
+
+En el continente europeo, Rusia es el país que más personas privadas de su libertad hay-567.789.-
+
+España ,en el mes de Diciembre de 2018 tuvo en total 48.348 personas encarceladas, según los datos provenientes del **Ministerio del Interior**.
+
+
+
+
+
+```{r out.width="100%" , echo=FALSE}
+#poblacion carcelaria
+url2 <- "https://raw.githubusercontent.com/Pavlinadinkova/Criminalidad/main/poblacion_carcelaria.csv"
+
+paises<- rio::import(url2, setclass="tibble") %>% mutate(Pais = c(1:15),Country = factor(Country, levels = Country[order(Number, decreasing = TRUE)]), Number = stringr::str_remove_all(Number, pattern = "[^[:alnum:]]"), Number = as.numeric(Number), )
+
+pl <- ggplot(paises, aes(x=Country, y=Number)) + geom_point(aes(color=Country), size=3) + geom_segment(aes(x=Country, xend= Country, y=0, yend= Number, color=Country))+geom_text(aes(label=Country), size=3, angle=90, vjust=1, nudge_y =0) +theme(legend.position="none")+ labs(y="Número de carcelarios", x=NULL,title = "Poblaciones con más presos", subtitle = "Datos de 2018" , caption= "Fuente:FRED")+ theme(axis.text.x = element_blank(),axis.line = element_line(color = "brown",size=0.5), axis.ticks.x = element_blank(), panel.background = element_rect(fill = "#F0EE84"), panel.grid.major.y = element_line("grey"), panel.grid.major.x = element_blank(), panel.grid.minor.y = element_blank())
+```
+
+```{r out.width="100%" , echo=FALSE}
+plotd <- ggdraw(pl)  + draw_image("https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg",x= 0.14, y = 0.39, width =0.03, height = 0.03, scale = 1.3)  + draw_image("https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Russia.svg",x= 0.20, y = 0.36, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg",x= 0.25, y = 0.30, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_Thailand.svg",x= 0.312, y = 0.30, width =0.03, height = 0.03, scale = 1.3)  + draw_image("https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg",x= 0.37, y = 0.25, width =0.03, height = 0.03, scale = 1.3)  + draw_image("https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg",x= 0.43, y = 0.25, width =0.03, height = 0.03, scale = 1.3)  + draw_image("https://upload.wikimedia.org/wikipedia/commons/c/ca/Flag_of_Iran.svg",x= 0.48, y = 0.21, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/f/fc/Flag_of_Mexico.svg",x= 0.54, y = 0.21, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg",x= 0.60, y = 0.79, width =0.03, height = 0.03, scale = 1.3)+ draw_image("https://upload.wikimedia.org/wikipedia/commons/9/99/Flag_of_the_Philippines.svg",x= 0.655, y = 0.21, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg",x= 0.715, y = 0.21, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg",x= 0.775, y = 0.20, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Colombia.svg",x= 0.835, y = 0.20, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/7/71/Flag_of_Ethiopia.svg",x= 0.89, y = 0.20, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg",x= 0.94, y = 0.74, width =0.03, height = 0.03, scale = 1.3)
+
+plotd
+
+```
+
+
+### **Código**
+
+
+```{r out.width="100%" }
+#poblacion carcelaria
+url2 <- "https://raw.githubusercontent.com/Pavlinadinkova/Criminalidad/main/poblacion_carcelaria.csv"
+
+paises<- rio::import(url2, setclass="tibble") %>% mutate(Pais = c(1:15),Country = factor(Country, levels = Country[order(Number, decreasing = TRUE)]), Number = stringr::str_remove_all(Number, pattern = "[^[:alnum:]]"), Number = as.numeric(Number), )
+
+pl <- ggplot(paises, aes(x=Country, y=Number)) + geom_point(aes(color=Country), size=3) + geom_segment(aes(x=Country, xend= Country, y=0, yend= Number, color=Country))+geom_text(aes(label=Country), size=3, angle=90, vjust=1, nudge_y =0) +theme(legend.position="none")+ labs(y="Número de carcelarios", x=NULL,title = "Poblaciones con más presos", subtitle = "Datos de 2018" , caption= "Fuente:FRED")+ theme(axis.text.x = element_blank(),axis.line = element_line(color = "brown",size=0.5), axis.ticks.x = element_blank(), panel.background = element_rect(fill = "#F0EE84"), panel.grid.major.y = element_line("grey"), panel.grid.major.x = element_blank(), panel.grid.minor.y = element_blank())
+```
+
+```{r, echo=FALSE}
+plotd <- ggdraw(pl)  + draw_image("https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg",x= 0.14, y = 0.39, width =0.03, height = 0.03, scale = 1.3)  + draw_image("https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Russia.svg",x= 0.20, y = 0.36, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg",x= 0.25, y = 0.30, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_Thailand.svg",x= 0.312, y = 0.30, width =0.03, height = 0.03, scale = 1.3)  + draw_image("https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg",x= 0.37, y = 0.25, width =0.03, height = 0.03, scale = 1.3)  + draw_image("https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg",x= 0.43, y = 0.25, width =0.03, height = 0.03, scale = 1.3)  + draw_image("https://upload.wikimedia.org/wikipedia/commons/c/ca/Flag_of_Iran.svg",x= 0.48, y = 0.21, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/f/fc/Flag_of_Mexico.svg",x= 0.54, y = 0.21, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg",x= 0.60, y = 0.79, width =0.03, height = 0.03, scale = 1.3)+ draw_image("https://upload.wikimedia.org/wikipedia/commons/9/99/Flag_of_the_Philippines.svg",x= 0.655, y = 0.21, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg",x= 0.715, y = 0.21, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg",x= 0.775, y = 0.20, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Colombia.svg",x= 0.835, y = 0.20, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/7/71/Flag_of_Ethiopia.svg",x= 0.89, y = 0.20, width =0.03, height = 0.03, scale = 1.3) + draw_image("https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg",x= 0.94, y = 0.74, width =0.03, height = 0.03, scale = 1.3)
+
+
+```
+
+## <FONT COLOR="#DA16CA"> 4.Asesinos </FONT> {.tabset}
+
+### ***Asesinos**
+
+En el gráfico que vemos a continuación , podemos ver algunos de los asesinos en serie según el número **confirmados** de víctimas. No obstante, existen numerosas víctimas sospechadas, que están sin confirmar. 
+Los asesinos en serie asesinan a tres o más personas en dos o más eventos separados.
+
+
+>- **Thug Behram (India)** :  Conocido como ‘’El rey de los matones’’, fue también uno de los asesinos en serie más prolíficos de la historia. Era el líder de una secta llamada ‘’Thugs’’ , considerada la primera mafia del mundo que operó en India. Los participantes de la secta conseguían hacer falsas amistades con los peregrinos hasta ganarse su confianza. Cuando los peregrinos les permitían unirseles en su travesía, el grupo de los ‘’thugs’’ los mataban tras robarlos. Ellos les estrangulaban con un pañuelo ceremonial llamado **rumal** , y escondían los cadáveres enterrándolos o arrojándolos dentro de algún pozo. 
+Behram fue ejecutado en 1840 por ahorcamiento.
+
+
+ 
+>- **Alexe Popova (Russia)** : Inuaguró el asesinato serial como una reivindicación de género extrema. Creó la primera agencia matrimonial de la historia con el slogan **’’Liberar a esposas infelices de sus esposos tiranos’’**.
+Su estrategia de negocio era aplicar tarifas mínimas al alcance de cualquier bolsillo, y arsénico como vehículo mortal. Usaba el **metaloide**, uno de los venenos más mortales.
+Fue fusilada en San Petersburgo en 1909.
+
+>- **Harold Shipman (Reino Unido)** : Conocido como **Doctor Muerte** , y mataba a sus víctimas inyectándoles sobredosis de morfina. Solía elegir a personas indefensas, de edad avanzada, en su mayoría mujeres que sobrepasaban los 75 años. El propio Shipman extendía los certificados de defunción poniéndoles como causa de muerte **por vejez**. En el año 2000, fue condenado a 1000 años de prisión con cadenas perpetuas. No obstante, murió en 2004 ahorcándose en su celda de prisión.
+
+>- **Mariam Soulakiotis ( Grecia) ** : Madre Superiora de una orden de monjas ilegalmente establecida llamadas “Las Calendarista” separadas de la Iglesia Ortodoxa, en Grecia.  Su **modus operandis** era alentar a las mujeres adineradas a unirse al convento y luego torturarlas hasta que donaran sus fortunas al monasterio. Una vez los donaban, Soulakiotis las mataba. También engañó a muchos de sus nuevos reclutas para que cedieran sus propiedades a su nombre, ya que los convenció de que esta era la mejor manera de entrar al cielo. Fue sentenciada únicamente a 16 años de prisión, sin embargo murió en la cárcel con una gran fortuna. 
+
+>- **Luis Alfredo Garavito ( Colombia)** : era conocido como **La Bestia**. Antes de cumplir los 18 años, fue detenido por la policia al intentar abusar de un niño. Tras este momento empezó a violar niños. Fue internado varias veces en hospitales psiquiatricos, pero a pesar de ello, siguió vilando y torturando a decenas de niños. A los 36 años comenzó con los asesinatos.  En 2001, fue sentenciado a 1853 años y 9 días de cárcel, la condena más alta de la que se tenga registro en Colombia,​ aunque posteriormente fue conmutada a 40 años, por su colaboración y buen comportamiento.
+
+>- **Pedro Alonso López (Colombia)** . Conocido como el **Monstruo de los Andes**. Pedro viajó por Perú, y había empezado a atacar violentamente y asesinar a niñas de las tribus locales. Luego hizo viajes por Ecuador , donde los casos de desaparición de muchachas aumentaron. Tras violar, estrangular y matar a sus víctimas, practicaba necrofilia con sus cuerpos ya sin vida, y los terminaba escondiendo o enterrando para no ser descubiertas. 
+Un error de Pedró le llevó directamente a su detención. Pillaron al criminal con las manos en la masa mientras secuestraba en un supermercado a Marie, una niña de 12 años. Los gritos de su madre alertaron a los empleados del local que lograron darle caza. 
+Le condenaron a 16 años de prisión. Sin embargo, al final le impusieron una fianza de cincuenta dolares y la obligación de un tratamiento psiquiátrico y su posterior seguimiento mensual. Una vez en libertad, desapareció en 1998. En 2002 la Interpol emitió una orden de búsqueda y captura contra el colombiano , pero sin embargo, sigue en libertad. 
+
+>- **Miyuki Ishikawa (Japón)** : Conocida como la **Matrona demoníaca**, mataba a los recién nacidos para **salvarles de una vida de miseria y pobreza**. Incluso había padres que acudían a ella con el fin de que hiciera algo, ya que no podían alimentar a su hijo. Sus prácticas no eran tan secretas, sin embargo,nadie realmente hizo nada para detenerla. Su marido, el DR. Nakayama era quién se encargaba de hacer los certificados de defunción falsos. Sin embargo en 1948 la policía la detuvo, tras haber encontrado los restos de bebés y tras la autopsia, se descubrió que no habían muerto por causas naturales. A pesar de todo, sólo fue condenada a 8 años de prisión por delito de omisión, y no por asesinato. 
+
+
+
+
+```{r out.width="100%" ,echo=FALSE}
+
+#Personas
+
+url <- "https://raw.githubusercontent.com/Pavlinadinkova/Criminalidad/main/personas.csv"
+
+personas <- rio::import(url, setclass = "tibble")
+persona1 <- personas 
+
+names(persona1)= c("Persona","Cantidad")
+
+persona1 <- persona1 %>%  arrange(desc(Cantidad))
+
+
+plot <- persona1 %>%  ggplot(aes(x=reorder(Persona, Cantidad) ,y=Cantidad),aes(fct_rev(Persona)))+ coord_flip() +  geom_bar(color = "#000000",fill = "#7FF364",stat="identity", width = 0.5) + geom_text(size = 4, stat = "identity", aes(label= Cantidad), hjust= 1) +  labs(fill=NULL,
+               x= NULL,
+               y=NULL,
+               title="Asesinos con más numeros de víctimas ",
+              
+               caption="Fuente: Wikipedia") +
+               theme( plot.background = element_rect(fill="#DEC0F0"),
+              panel.background = element_blank(),
+              panel.grid  = element_blank(),
+              axis.ticks = element_blank(),
+              axis.text.x = element_blank(),
+              axis.text.y = element_text(face = "bold",size = 10),
+              plot.title = element_text(hjust = 0, size = 15),
+              plot.subtitle = element_text(hjust = 0.5, size = 15),
+              panel.border = element_blank(),
+              legend.position = "none",
+              plot.margin = margin(t = 10, r = 8, b = 8 , l=32),
+              strip.background = element_rect(fill = "blue",colour = "red"))
+```
+
+```{r out.width="100%"  , echo=FALSE}
+
+plotd <- ggdraw(plot)  + draw_image("https://historiadelosasesinos.files.wordpress.com/2014/12/elnorte50f8d08c62fa7_20-thug.jpg",x= 0.04, y = 0.82, width =0.05, height = 0.05, scale = 1.3) +
+    draw_image("https://www.infobae.com/new-resizer/HE-mf0yTQ3E44uIDKePHyfrTdJE=/768x768/filters:format(jpg):quality(85)/s3.amazonaws.com/arc-wordpress-client-uploads/infobae-wp/wp-content/uploads/2018/12/13155622/Madame-Popova-5.jpg", x=0.04, y=0.71, width=0.06, height = 0.06, scale=1.3) +
+    draw_image("https://www.thesun.co.uk/wp-content/uploads/2020/09/NINTCHDBPICT000001294259.jpg?strip=all&w=960", x=0.03, y=0.59, width=0.05, height = 0.05, scale = 1.2) + draw_image("http://k33.kn3.net/taringa/5/D/B/1/2/5/MaximilianoA31/F27.jpg", x=0.002, y=0.45, width=0.055, height = 0.06, scale = 1.3) + draw_image("http://k33.kn3.net/taringa/E/4/C/B/A/8/MaximilianoA31/F7F.jpg", x=0.06, y=0.35, width=0.06, height = 0.06, scale = 1.3) +
+    draw_image("https://www.infobae.com/new-resizer/A8S7_04Am1uELgc2b71isADXgJc=/768x1152/filters:format(jpg):quality(85)/s3.amazonaws.com/arc-wordpress-client-uploads/infobae-wp/wp-content/uploads/2018/11/14100933/Pedro-Alonso-Lopez-el-Monstruo-de-los-Andes-2.jpg",x= 0.06, y = 0.245, width =0.06, height = 0.06, scale = 1.3) +
+    draw_image("https://miro.medium.com/max/625/1*Xp06fj2hEqip5r6-eJ1Tzg.jpeg",x= 0.035, y = 0.115, width =0.06, height = 0.06, scale = 1.3)
+
+plotd
+
+```
+
+### **Código**
+
+
+
+```{r out.width="100%" }
+
+#Personas
+
+url <- "https://raw.githubusercontent.com/Pavlinadinkova/Criminalidad/main/personas.csv"
+
+personas <- rio::import(url, setclass = "tibble")
+persona1 <- personas 
+
+names(persona1)= c("Persona","Cantidad")
+
+persona1 <- persona1 %>%  arrange(desc(Cantidad))
+
+
+plot <- persona1 %>%  ggplot(aes(x=reorder(Persona, Cantidad) ,y=Cantidad),aes(fct_rev(Persona)))+ coord_flip() +  geom_bar(color = "#000000",fill = "#7FF364",stat="identity", width = 0.5) + geom_text(size = 4, stat = "identity", aes(label= Cantidad), hjust= 1) +  labs(fill=NULL,
+               x= NULL,
+               y=NULL,
+               title="Asesinos con más numeros de víctimas ",
+              
+               caption="Fuente: Wikipedia") +
+               theme( plot.background = element_rect(fill="#DEC0F0"),
+              panel.background = element_blank(),
+              panel.grid  = element_blank(),
+              axis.ticks = element_blank(),
+              axis.text.x = element_blank(),
+              axis.text.y = element_text(face = "bold",size = 10),
+              plot.title = element_text(hjust = 0, size = 15),
+              plot.subtitle = element_text(hjust = 0.5, size = 15),
+              panel.border = element_blank(),
+              legend.position = "none",
+              plot.margin = margin(t = 10, r = 8, b = 8 , l=32),
+              strip.background = element_rect(fill = "blue",colour = "red"))
+#A esto le añadimos imágenes con ''ggdraw'' y ''draw_image''
+```
+
+```{r, echo=FALSE}
+
+plotd <- ggdraw(plot)  + draw_image("https://historiadelosasesinos.files.wordpress.com/2014/12/elnorte50f8d08c62fa7_20-thug.jpg",x= 0.04, y = 0.82, width =0.05, height = 0.05, scale = 1.3) +
+    draw_image("https://www.infobae.com/new-resizer/HE-mf0yTQ3E44uIDKePHyfrTdJE=/768x768/filters:format(jpg):quality(85)/s3.amazonaws.com/arc-wordpress-client-uploads/infobae-wp/wp-content/uploads/2018/12/13155622/Madame-Popova-5.jpg", x=0.04, y=0.71, width=0.06, height = 0.06, scale=1.3) +
+    draw_image("https://www.thesun.co.uk/wp-content/uploads/2020/09/NINTCHDBPICT000001294259.jpg?strip=all&w=960", x=0.03, y=0.59, width=0.05, height = 0.05, scale = 1.2) + draw_image("http://k33.kn3.net/taringa/5/D/B/1/2/5/MaximilianoA31/F27.jpg", x=0.002, y=0.45, width=0.055, height = 0.06, scale = 1.3) + draw_image("http://k33.kn3.net/taringa/E/4/C/B/A/8/MaximilianoA31/F7F.jpg", x=0.06, y=0.35, width=0.06, height = 0.06, scale = 1.3) +
+    draw_image("https://www.infobae.com/new-resizer/A8S7_04Am1uELgc2b71isADXgJc=/768x1152/filters:format(jpg):quality(85)/s3.amazonaws.com/arc-wordpress-client-uploads/infobae-wp/wp-content/uploads/2018/11/14100933/Pedro-Alonso-Lopez-el-Monstruo-de-los-Andes-2.jpg",x= 0.06, y = 0.245, width =0.06, height = 0.06, scale = 1.3) +
+    draw_image("https://miro.medium.com/max/625/1*Xp06fj2hEqip5r6-eJ1Tzg.jpeg",x= 0.035, y = 0.115, width =0.06, height = 0.06, scale = 1.3)
+
+
+```
+
+
+## <FONT COLOR="#DA16CA"> 5. Tasa comparada </FONT> {.tabset}
+
+### ***Comparación**
+
+El siguiente gráfico nos muestra la tasa comparada de criminalidad de los países de la Unión Europea, considerando las infracciones penales por diez mil habitantes. Son datos de los años 2008-2009.
+
+España ,como podemos observar, es uno de los países más seguros de Europa, según los datos de **Eurostat**. 
+
+
+
+```{r out.width="100%" , echo=FALSE}
+
+#Tasa comparada
+
+url <- "https://raw.githubusercontent.com/Pavlinadinkova/Criminalidad/main/comparada.csv"
+comparada <- rio::import(url, setclass = "tibble") %>% mutate(Pais = c("SUECIA","BELGICA","DINAMARCA","REINO UNIDO","HOLANDA","ALEMANIA","LUXEMBURGO","FINLANDIA","IRLANDA","AUSTRIA","ITALIA","FRANCIA","ESPAÑA","PORTUGAL","GRECIA"),Pais = factor(Pais, levels = Pais[order(Tasa, decreasing = TRUE)]), Tasa = stringr::str_remove_all(Tasa, pattern = "[^[:alnum:]]"), Tasa = as.numeric(Tasa),)
+
+
+d <- ggplot(comparada) +
+  geom_point(aes(x = Ranking, y = Tasa, colour = Pais )) +
+  facet_wrap(vars(Pais))+ labs(title = "Tasa de criminalidad comparada ",
+              subtitle = "Por número de delitos", 
+              caption = "Datos provenientes de Ministerio de Asuntos Exteriores",
+              x = "Ranking ",
+              y = NULL,
+              color = "Ranking")
+
+
+
+plotly::ggplotly(d, width = 900, height = 500)
+
+```
+
+### **Código**
+
+
+```{r out.width="100%"}
+
+#Tasa comparada
+
+url <- "https://raw.githubusercontent.com/Pavlinadinkova/Criminalidad/main/comparada.csv"
+comparada <- rio::import(url, setclass = "tibble") %>% mutate(Pais = c("SUECIA","BELGICA","DINAMARCA","REINO UNIDO","HOLANDA","ALEMANIA","LUXEMBURGO","FINLANDIA","IRLANDA","AUSTRIA","ITALIA","FRANCIA","ESPAÑA","PORTUGAL","GRECIA"),Pais = factor(Pais, levels = Pais[order(Tasa, decreasing = TRUE)]), Tasa = stringr::str_remove_all(Tasa, pattern = "[^[:alnum:]]"), Tasa = as.numeric(Tasa),)
+
+
+d <- ggplot(comparada) +
+  geom_point(aes(x = Ranking, y = Tasa, colour = Pais )) +
+  facet_wrap(vars(Pais))+ labs(title = "Tasa comparada ",
+              subtitle = "Por número de delitos", 
+              caption = "Datos provenientes de Ministerio de Asuntos Exteriores",
+              x = "Ranking ",
+              y = NULL,
+              color = "Ranking")
+
+
+```
+
+## <FONT COLOR="#DA16CA"> 6. Crimen en España </FONT>
+
+¿Es España un país seguro? Como hemos podido observar en los gráficos anteriores, España es uno de los países europeos más seguros, ya que no ocupa ningún puesto destacado en las clasificaciones de los principales tipos de crímenes como homicidios, violaciones o robos . 
+
+Según datos de 2016 proporcionados por **Eurostat** :
+
+>- •Cuenta con una tasa de 0,48 **homicidios** por cada 100.000 habitantes.
+>- •Tasa de **agresiones** de 37,2 por cada 100.000 habitantes.
+>- •Tasa de **robos** que afecta a 351,1 de cada cien mil personas.
+>- •España está en el puesto 21º con 18,7 casos de **violencia sexual**  por cada 100.000 personas. 
+
+
+### <FONT COLOR="#DA16CA"> 6.1 Comunidades por número de delitos </FONT>
+
+
+```{r out.width="100%"}
+#Importamos datos y los arreglamos
+url33 <- "https://raw.githubusercontent.com/Pavlinadinkova/Criminalidad/main/ccaa.csv"
+ccaa <- rio::import(url33)
+
+data <- ccaa %>% mutate( Total = stringr::str_remove_all(Delitos, pattern = "([.])"))
+data <- data %>% mutate( Total = stringr::str_replace_all(Total , pattern = "[,]" , replacement = "." ))
+data <- data %>% mutate( Total = as.numeric(Total))
+
+ccaa1 <- data %>% select(Comunidad , Total) %>% arrange(desc(Total)) %>% filter(Comunidad != "Espanya Total")
+names(ccaa1) = c("CCAA","Delito")
+
+library(wordcloud2)
+library(ggplot2)
+library(tidyverse)
+
+#Gráfico
+comunidades <- ggplot(ccaa1, aes(x=reorder(CCAA,Delito), y=Delito, fill=CCAA))+
+  geom_bar(stat="identity") +
+  theme(legend.position = "none") +
+  coord_polar(start = 0)  + ylim(0,410000) + 
+  labs (x="Comunidades Autonomas") + labs(y="Delitos") + labs(title = "Comunidades por número de delitos ") 
+
+comunidades
+
+```
+
+Según datos proporcionados por el **Ministerio del Interior** en 2010, podemos observar las Comunidades Autónomas donde más delitos e infracciones se producen.
+
+
+Las cifras absolutas revelan que Andalucía con 409.392 casos , Madrid con 401.855 casos y Valencia con 287.156 casos son, por este orden, las comunidades con más nivel delictivo. También influye que son las comunidades que mayor población tienen, sin contar la Comunidad de Cataluña , que no estaba en los datos ofrecidos. No obstante, según datos de **Observatorio de la Delincuencia en Andalucía** Cataluña se sitúa en el puesto número 3, delante de la Comunidad Valenciana , con más de 350.000 casos.
+
+**Andalucía** se sitúa en todas las tipologías delictivas muy cercanas a la media española. Esto quiere decir que, a pesar de ser la comunidad más poblada, no se diferencia del resto de comunidades en el nivel de delincuencia registrada. En dicha comunidad, Granada es la provincia donde más homicidios y asesinatos se producen.
+
+En **Madrid**, el delito más grave, el de homicidios, ha caído un 11%.Los delitos de lesiones y riñas tumultuarias ascienden un 10.6%. Los secuestros denunciados ascendieron al 16%.
+Uno de los datos más preocupantes es el importante aumento de delitos contra la libertad e indemnidad sexual. Los robos con violencia e intimidación subieron un 9.2% ; los robos en viviendas cayeron un 10.5%
+
+En **Valencia**, hay que destacar que en el caso de homicidios dolosos y asesinatos consumados incrementa un 150%. En cuanto a los delitos contra la libertad e indemnidad sexual incrementan un 26,4%, mientras que el resto de los delitos contra la libertad e indemnidad sexual sube un 30,7 %.
+También han aumentado los robos de vehículos un 4,4 % y los robos con violencia e intimidación un 8,1%. Y baja un 15,3 % los robos con la fuerza en domicilio y también bajan los delitos por tráfico de drogas un 3,9%.
+
+
+
+
+ 
+ 
+
+
+
+
+### <FONT COLOR="#DA16CA"> 6.2 Tipos de delitos </FONT>
+
+
+
+```{r out.width="100%"}
+#Improtamos datos
+url98 <- "https://raw.githubusercontent.com/Pavlinadinkova/Criminalidad/main/drogas.csv"
+tipos<- rio::import(url98 , setclass = "tibble")
+
+#Hurtos 
+
+ hurtos <- tipos %>% select(Hurtos, Any)
+
+grafhurtos <- ggplot(hurtos, aes(x=Any, y=Hurtos , color=Any)) + geom_line()  +
+  expand_limits(y=2) + theme(legend.position = "none") + labs(title = "Infracciones penales por hurtos ", subtitle ="En miles de habitantes" ,  caption = "Source:INE",
+              x = "Fecha ",
+              y = NULL,
+              color = "Hurtos") + theme(
+  panel.background = element_rect(fill = "#F7C9C9")) 
+
+#Hacemos lo mismo para los otros delitos y finalmente juntamos los gráficos con library(patchwork)
+```
+
+```{r,echo=FALSE}
+
+
+# Drogas
+  
+drogas <- tipos %>% select(Infraccionesdrogas, Any)
+
+  grafdrogas <- ggplot(drogas, aes(x=Any, y=Infraccionesdrogas , color=Any)) + geom_line()  +
+  expand_limits(y=2) + theme(legend.position = "none") + labs(title = "Infracciones penales por tráfico drogas ",subtitle ="En miles de habitantes" ,     caption = "Source:INE",
+              x = "Fecha ",
+              y = NULL,
+              color = "Drogas") + theme(
+  panel.background = element_rect(fill = "#B0FAE9")) 
+
+
+
+#Sexuales
+
+sexuales <- tipos %>% select(Sexuales,Any)
+
+  grafsexual <- ggplot(sexuales, aes(x=Any, y=Sexuales , color=Any)) + geom_line()  +
+  expand_limits(y=2) + theme(legend.position = "none") + labs(title = "Infracciones agresiones sexuales ",    caption = "Source:INE",
+              x = "Fecha ",
+              y = NULL,
+              color = "Sexuales") + theme(
+  panel.background = element_rect(fill = "#F5EE73")) 
+
+
+
+#Secuestros
+secuestros <- tipos %>% select(Secuestros, Any)
+
+  grafsecuestros <- ggplot(secuestros, aes(x=Any, y=Secuestros , color=Any)) + geom_line()  +
+  expand_limits(y=2) + theme(legend.position = "none") + labs(title = "Infracciones penales por secuestros ",    caption = "Source:INE",
+              x = "Fecha ",
+              y = NULL,
+              color = "Secuestros") + theme(
+  panel.background = element_rect(fill = "#88F969")) 
+
+
+
+```
+
+Los gráficos siguientes, según el **Balance de Criminalidad del Ministerio de Interior** permite ver cómo han ido evolucionando otros tipos de delitos en España como son el tráfico de drogas, los hurtos o los robos de vehículos. Además, recientemente Interior ha incluido en sus estadísticas periódicas los secuestros y las agresiones sexuales.
+
+>- En España se han registrado 12.662 infracciones por tráfico de drogas hasta el trimestre 3 de 2020﻿
+>- En España se han cometido 309.913﻿ hurtos hasta el último trimestre de 2020.
+>- Se han cometido 61 secuestros hasta el último trimestre.
+>- En España se han registrado 1.281 violaciones hasta trimestre 3 de 2020.
+
+
+```{r out.width="100%" ,  echo=FALSE}
+library(patchwork)
+(grafhurtos + grafdrogas) / (grafsexual+grafsecuestros )
+
+```
+
+
+
+### <FONT COLOR="#DA16CA"> 6.3 Evolución de las infracciones </FONT>
+
+El siguiente gráfico representa cómo ha evolucionado el número de infracciones penales desde 2012. Como podemos observar en 2020 se ha producido un descenso bastante importante en las infracciones, probablemente producidas por la pandemia mundial de Covid-19, ya que Gobierno español ( como muchos otros en el mundo) decretó un confinamiento generalizado, ampliándose posteriormente al conjunto de toda la población, limitando la libertad de movimiento de los ciudadanos.
+
+Es importante mencionar, que durante la pandemia, han ido apareciendo otros tipos de delitos, que no están contabilizados en las estadisticas , que son las estafas y los ciberdelitos. 
+
+```{r out.width="100%" }
+
+library(ggplot2)
+library(tidyverse)
+library(gganimate)
+library(hrbrthemes)
+
+url34 <- "https://raw.githubusercontent.com/Pavlinadinkova/Criminalidad/main/variacion.csv"
+
+variacion <- rio::import(url34 , setclass = "tibble")
+
+names(variacion)= c("Periodo","Infracciones")
+variacion <- variacion%>% mutate( Infracciones = stringr::str_remove_all(Infracciones, pattern = "([.])"))
+variacion <- variacion %>% mutate( Infracciones = stringr::str_replace_all(Infracciones , pattern = "[,]" , replacement = "." ))
+variacion <- variacion %>% mutate( Infracciones = as.numeric(Infracciones)) 
+
+
+variacion1 <- variacion %>% separate(Periodo, c("Año","Trimestre"), sep = "[-]") %>% select(-c(Trimestre))
+
+variacion2 <- variacion1 %>% group_by(Año, Infracciones) %>%  mutate(SumaTotal= sum(Infracciones)) %>% mutate(Año = unique(Año)) %>% ungroup()
+
+
+variacion3<- variacion2 %>% select(c(Año,SumaTotal)) %>% unique() %>% mutate(Año = as.numeric(Año))
+
+
+dd <- ggplot(variacion3, aes(Año, SumaTotal)) + geom_point() + geom_line( color="#F24340" , size=1 , aplha=0.9 , linetype=2) +
+  theme_ipsum() + ggtitle("Variación interanual de las infracciones penales registradas")  + labs(x = "Año", y = NULL)  
+  
+dd
+
+#Si al final ponemos ''transition_reveal(Año) , saldrá el gráfico animado 
+
+```
+
+### <FONT COLOR="#DA16CA"> 7. Conclusiones </FONT>
+
+La delincuencia es un fenómeno universal y tan antiguo como la misma humanidad. La evolución de la criminalidad es un índice fundamental para comprender la realidad social. 
+No obstante, es un fenómeno que cada vez tiende a aumentar más, y es, lamentablemente, difícilmente controlable. 
+
+Como hemos visto por el análisis anterior, por suerte no nos encontramos en una de las regiones más violentas del mundo, y por eso mucha gente ni le presta atención al crimen. Sin embargo, esto no debería de alegrarnos, al contrario, se deberían tomar más medidas para prevenir las delincuencias que se producen, tanto a nivel europeo, como nacional. 
+Porque , aunque no tengamos numerosos asesinatos o homicidios como es el caso de Venezuela o Afganistán, sí que los tenemos, y es algo que debería  o , al menos , se debería intentar de reducir. Por eso ,acciones como aumentar la vigilancia, las retenciones, las sanciones y una justicia más estricta, es necesaria. 
+
+
+
+## <FONT COLOR="#DA16CA"> 8. Bibliografia </FONT>
+
+>- Página oficial del Instituto Nacional de Estadística. [aquí](https://www.ine.es/dyngs/INEbase/listaoperaciones.htm)
+
+>- La Fundación InSight Crime. [aquí](https://es.insightcrime.org/noticias/analisis/balance-homicidios-2019/)
+
+>- Artículo del periódico **El Economista** [aquí](https://www.eleconomista.com.mx/internacionales/Los-10-paises-con-mas-personas-encarceladas-20160912-0063.html)
+
+
+>- EUROSTAT. [aquí](https://ec.europa.eu/eurostat/databrowser/view/crim_off_cat/default/table?lang=en)
+
+>- La Fundación iO [aquí](https://fundacionio.com/viajarseguro/consejos-viajeros/violencia/paises-con-mayor-indice-de-criminalidad/#)
+
+>- **BBC NEWS** [aquí](https://www.bbc.com/mundo/noticias-internacional-44047889)
+
+>- Diario Digital Nuestro País [aquí](https://www.elpais.cr/2020/07/18/los-paises-mas-seguros-y-con-menos-delincuencia-para-viajar-en-2020/)
+
+>- Ministerio del Interior **Portal Estadístico de Criminalidad ** [aquí](https://estadisticasdecriminalidad.ses.mir.es/publico/portalestadistico/) 
+
+
+ 
+
+----------------
+
+<br><br>
+
+Para acabar este chunk para incluir tu `session info`:
+
+```{r}
+sessioninfo::session_info() %>% details::details(summary = 'current session info') 
+```
